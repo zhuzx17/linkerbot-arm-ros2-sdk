@@ -23,7 +23,7 @@ trap cleanup EXIT
 
 mkdir -p "$context_dir"/{ros2,sdk,transport}
 # Explicit source allowlists avoid copying .git, local environments or credentials.
-for item in setup.py setup.cfg package.xml resource linker_arm_ros2 launch config scripts tests constraints; do
+for item in setup.py setup.cfg package.xml LICENSE resource linker_arm_ros2 launch config scripts tests constraints requirements; do
     cp -r "$ros2_source/$item" "$context_dir/ros2/"
 done
 mkdir -p "$context_dir/ros2/docker"

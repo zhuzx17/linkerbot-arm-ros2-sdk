@@ -1,5 +1,5 @@
 ARG ROS_DISTRO=humble
-ARG ROS_IMAGE=public.ecr.aws/docker/library/ros
+ARG ROS_IMAGE=ros
 FROM ${ROS_IMAGE}:${ROS_DISTRO}-ros-base
 ARG ROS_DISTRO
 
@@ -13,10 +13,13 @@ RUN case "$ROS_DISTRO" in humble|jazzy) ;; *) exit 1 ;; esac \
     && rm -rf /var/lib/apt/lists/*
 
 COPY ros2/constraints /opt/arm-constraints
+COPY ros2/requirements/ci-test.txt /opt/arm-ci-test.txt
 RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m venv --system-site-packages /opt/arm-venv \
     && /opt/arm-venv/bin/python -m pip install --upgrade \
-       -c /opt/arm-constraints/ros-${ROS_DISTRO}.txt 'pip<26' setuptools wheel 'packaging>=24.2'
+       -c /opt/arm-constraints/ros-${ROS_DISTRO}.txt 'pip<26' setuptools wheel 'packaging>=24.2' \
+    && /opt/arm-venv/bin/python -m pip install \
+       -c /opt/arm-constraints/ros-${ROS_DISTRO}.txt -r /opt/arm-ci-test.txt
 
 COPY transport /opt/src/transport
 COPY sdk /opt/src/sdk
