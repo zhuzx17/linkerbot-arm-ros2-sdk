@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Adapt linkerbot_arm to the ROS2 arm protocol.
 
 SDK discovery is shared with standalone tools through sdk_loader.

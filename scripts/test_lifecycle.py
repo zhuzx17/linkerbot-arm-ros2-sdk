@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 纯 Python SDK 生命周期测试脚本（不依赖 ROS2）。
 
@@ -15,6 +14,7 @@
   python3 scripts/test_lifecycle.py                   # 使用 arm_config.yaml 配置
   python3 scripts/test_lifecycle.py --left-can can1 --right-can can2 --arm-type a7lite
 """
+
 import argparse
 import os
 import signal
@@ -56,6 +56,7 @@ def load_config():
     config_path = os.path.join(SCRIPT_DIR, "..", "config", "arm_config.yaml")
     if os.path.exists(config_path):
         import yaml
+
         with open(config_path) as f:
             return yaml.safe_load(f)
     return None
@@ -66,7 +67,9 @@ def create_arm(arm_type, side, can_interface):
     if cls is None:
         raise ValueError(f"不支持的 arm_type: {arm_type}")
     if not callable(getattr(cls, "home_cancellable", None)):
-        raise RuntimeError("SDK must provide home_cancellable; update the paired arm source")
+        raise RuntimeError(
+            "SDK must provide home_cancellable; update the paired arm source"
+        )
     print(f"  [{side}] 创建 {arm_type} 实例, CAN={can_interface} ...")
     t0 = time.perf_counter()
     arm = cls(side=side, interface_name=can_interface)
@@ -123,9 +126,9 @@ def test_state_read(arm, side, count=5):
             angles = arm.get_angles()
             arm.get_velocities()
             arm.get_torques()
-            print(f"    [{side}] #{i+1} pos={[f'{a:.3f}' for a in angles]}")
+            print(f"    [{side}] #{i + 1} pos={[f'{a:.3f}' for a in angles]}")
         except Exception as e:
-            print(f"    [{side}] #{i+1} 读取失败: {e}")
+            print(f"    [{side}] #{i + 1} 读取失败: {e}")
         time.sleep(0.01)
 
 
@@ -159,7 +162,9 @@ def test_streaming(arm, side, duration=3.0, hz=100):
 
     dt = time.perf_counter() - t_start
     actual_hz = count / dt if dt > 0 else 0
-    print(f"  [{side}] 流式控制完成: {count} 帧 / {dt:.2f}s = {actual_hz:.1f}Hz, 错误={errors}")
+    print(
+        f"  [{side}] 流式控制完成: {count} 帧 / {dt:.2f}s = {actual_hz:.1f}Hz, 错误={errors}"
+    )
 
 
 def test_disable(arm, side):
@@ -232,8 +237,9 @@ def main(argv=None):
     parser.add_argument("--arm-type", type=str, default=None)
     parser.add_argument("--left-can", type=str, default=None)
     parser.add_argument("--right-can", type=str, default=None)
-    parser.add_argument("--single", choices=["left", "right"], default=None,
-                        help="只测试单臂")
+    parser.add_argument(
+        "--single", choices=["left", "right"], default=None, help="只测试单臂"
+    )
     args = parser.parse_args(argv)
 
     cfg = load_config()

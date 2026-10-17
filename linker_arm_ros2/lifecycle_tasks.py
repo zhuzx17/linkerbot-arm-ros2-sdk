@@ -1,8 +1,8 @@
 """Bounded lifecycle workers; ROS callbacks await completion without blocking."""
 
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable
 
 from rclpy.task import Future
 
@@ -47,7 +47,11 @@ class LifecycleTasks:
             )
 
     def submit(
-        self, operation: Callable[[threading.Event], str], *, stop=False, kind="lifecycle"
+        self,
+        operation: Callable[[threading.Event], str],
+        *,
+        stop=False,
+        kind="lifecycle",
     ) -> Future:
         with self._lock:
             if self._closing or self._stop is not None or (not stop and self._active):

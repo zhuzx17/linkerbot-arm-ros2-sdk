@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 import pytest
+
 from linker_arm_ros2.sdk_loader import ensure_sdk_importable
 
 ensure_sdk_importable()
@@ -112,10 +113,13 @@ def test_real_sdk_adapter_loads_without_legacy_namespace(tmp_path, source_fallba
     if source_fallback:
         source = copy_real_sdk(tmp_path / "standalone-arm/src")
         args.append(source)
-        code += REQUIRE_SELECTED_SDK_SOURCE + """
+        code += (
+            REQUIRE_SELECTED_SDK_SOURCE
+            + """
 import os
 os.environ['LINKERBOT_ARM_SRC'] = str(sdk_source)
 """
+        )
     code += VERIFY_CANONICAL_SDK
     if source_fallback:
         code += """
@@ -132,7 +136,9 @@ assert pathlib.Path(linkerbot_arm.__file__).resolve().is_relative_to(sdk_source)
 def test_sdk_test_file_collects_independently_from_source(tmp_path, test_file, layout):
     """Each target must bootstrap itself without test_arm_node collection."""
     workspace = tmp_path / "workspace"
-    ros_root = workspace / ("linker_arm_ros2" if layout == "sibling" else "src/linker_arm_ros2")
+    ros_root = workspace / (
+        "linker_arm_ros2" if layout == "sibling" else "src/linker_arm_ros2"
+    )
     source = (
         tmp_path / "explicit-arm/src"
         if layout == "environment"
@@ -148,7 +154,10 @@ def test_sdk_test_file_collects_independently_from_source(tmp_path, test_file, l
     target.parent.mkdir(parents=True)
     shutil.copy2(REPO_ROOT / "tests" / test_file, target)
 
-    code = REJECT_LEGACY_IMPORTS + REQUIRE_SELECTED_SDK_SOURCE + """
+    code = (
+        REJECT_LEGACY_IMPORTS
+        + REQUIRE_SELECTED_SDK_SOURCE
+        + """
 import os
 import pytest
 
@@ -158,9 +167,12 @@ if sys.argv[3] == 'environment':
 result = pytest.main([sys.argv[4], '--collect-only', '-q', '-p', 'no:cacheprovider'])
 assert result == 0, result
 assert source_guard.blocked_imports >= 1
-""" + VERIFY_CANONICAL_SDK + """
+"""
+        + VERIFY_CANONICAL_SDK
+        + """
 assert pathlib.Path(linkerbot_arm.__file__).resolve().is_relative_to(sdk_source)
 """
+    )
     result = run_without_legacy_sdk(
         code, tmp_path, source, layout, target, repo_root=ros_root
     )
@@ -169,7 +181,9 @@ assert pathlib.Path(linkerbot_arm.__file__).resolve().is_relative_to(sdk_source)
 
 @pytest.mark.parametrize("script", ["calibrate_arm_zero.py", "test_lifecycle.py"])
 def test_standalone_help_uses_new_sdk_without_opening_can(tmp_path, script):
-    code = REJECT_LEGACY_IMPORTS + """
+    code = (
+        REJECT_LEGACY_IMPORTS
+        + """
 import pathlib
 import runpy
 from linker_arm_ros2.sdk_loader import ensure_sdk_importable
@@ -194,5 +208,6 @@ else:
 
 assert 'linkerbot' not in sys.modules
 """
+    )
     result = run_without_legacy_sdk(code, tmp_path, script)
     assert "usage:" in result.stdout.lower()

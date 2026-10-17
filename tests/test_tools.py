@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import create_autospec
 
 import pytest
+
 from linker_arm_ros2.sdk_loader import ensure_sdk_importable
 
 ensure_sdk_importable()

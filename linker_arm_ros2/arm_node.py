@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """ROS2 communication node with cancellable lifecycle tasks.
 
 SDK construction and middleware setup finish before auto-enable/home starts.
@@ -184,7 +183,9 @@ class ArmNode(Node):
         if not isinstance(self.side, str) or self.side not in _MOTOR_IDS:
             raise ValueError("side must be 'left' or 'right'")
         if not isinstance(self.arm_type, str) or self.arm_type.lower() not in (
-            "a7", "a7lite", "p7"
+            "a7",
+            "a7lite",
+            "p7",
         ):
             raise ValueError("arm_type must be a7, a7lite or p7")
         if self.world_frame not in ("urdf", "maestro"):
@@ -194,10 +195,14 @@ class ArmNode(Node):
         if not isinstance(self.auto_enable, bool) or not isinstance(
             self.calibrate_zero_on_startup, bool
         ):
-            raise ValueError("auto_enable and calibrate_zero_on_startup must be booleans")
-        if isinstance(self.filter_window, bool) or not isinstance(
-            self.filter_window, int
-        ) or self.filter_window < 1:
+            raise ValueError(
+                "auto_enable and calibrate_zero_on_startup must be booleans"
+            )
+        if (
+            isinstance(self.filter_window, bool)
+            or not isinstance(self.filter_window, int)
+            or self.filter_window < 1
+        ):
             raise ValueError("filter_window must be a positive integer")
 
         def finite(name, value):
@@ -215,7 +220,9 @@ class ArmNode(Node):
 
         rate = finite("publish_rate", self.publish_rate)
         if rate <= 0 or not 1 <= 1e9 / rate <= 2**63 - 1:
-            raise ValueError("publish_rate must produce a positive representable ROS timer period")
+            raise ValueError(
+                "publish_rate must produce a positive representable ROS timer period"
+            )
         if finite("cmd_timeout", self.cmd_timeout) <= 0:
             raise ValueError("cmd_timeout must be positive")
         if finite("startup_delay", self.startup_delay) < 0:
@@ -502,7 +509,8 @@ class ArmNode(Node):
         # motor execution; target success still means queue admission.
         if restarting and (not self._slow_speed_ready or self.normal_speed_active):
             self._pending_command = (
-                positions, time.monotonic() if received_at is None else received_at
+                positions,
+                time.monotonic() if received_at is None else received_at,
             )
             self._schedule_speed_mode(normal=False)
             return

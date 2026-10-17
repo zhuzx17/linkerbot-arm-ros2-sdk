@@ -7,6 +7,9 @@ import pytest
 from linker_arm_ros2 import sdk_adapter
 from linker_arm_ros2.arm_factory import create_arm
 from linker_arm_ros2.arm_protocol import ArmProtocol
+
+# The adapter must discover a source-only SDK before importing it directly.
+# isort: split
 import linkerbot_arm
 
 OPERATIONS = [

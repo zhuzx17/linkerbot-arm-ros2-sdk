@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 机械臂实例工厂。
 
@@ -12,6 +11,7 @@
     3. 在本文件的 create_arm() 中添加分支即可
   arm_node.py 和 launch 文件完全不需要修改。
 """
+
 from .arm_protocol import ArmProtocol
 from .sdk_adapter import LinkerBotSDKAdapter
 

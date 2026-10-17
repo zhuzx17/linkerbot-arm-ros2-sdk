@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 机械臂控制抽象协议（ArmProtocol）。
 

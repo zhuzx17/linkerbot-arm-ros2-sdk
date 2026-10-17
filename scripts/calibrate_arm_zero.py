@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """A7 / A7 Lite zero calibration tool using linkerbot-arm directly.
 
 Verification status:
@@ -24,8 +23,8 @@ from typing import Literal
 import yaml
 
 SCRIPT_PATH = Path(__file__).resolve()
-PACKAGE_ROOT = SCRIPT_PATH.parent.parent           # src/linker_arm_ros2
-WORKSPACE_ROOT = PACKAGE_ROOT.parent.parent        # workspace root
+PACKAGE_ROOT = SCRIPT_PATH.parent.parent  # src/linker_arm_ros2
+WORKSPACE_ROOT = PACKAGE_ROOT.parent.parent  # workspace root
 DEFAULT_CONFIG_PATH = PACKAGE_ROOT / "config" / "arm_config.yaml"
 TASK_CONFIG_PATH = WORKSPACE_ROOT / "task_config.json"
 ARM_NODE_NAMES = ("arm_node", "left_arm_node", "right_arm_node")
@@ -140,8 +139,7 @@ def ensure_arm_nodes_stopped() -> None:
     running = find_running_arm_nodes(read_ros_node_list())
     if running:
         raise RuntimeError(
-            "机械臂 ROS2 节点正在运行，标定前请先停止机械臂服务: "
-            + ", ".join(running)
+            "机械臂 ROS2 节点正在运行，标定前请先停止机械臂服务: " + ", ".join(running)
         )
 
 
@@ -179,7 +177,9 @@ def confirm_zero_pose(side: str, arm_type: str) -> None:
         raise RuntimeError(f"[{side}] 用户取消标定")
 
 
-def verify_zero_angles(side: str, angles: list[float], tolerance: float, label: str) -> None:
+def verify_zero_angles(
+    side: str, angles: list[float], tolerance: float, label: str
+) -> None:
     if (
         isinstance(tolerance, bool)
         or not isinstance(tolerance, (int, float))
@@ -232,7 +232,9 @@ def close_arm_quietly(arm) -> None:
         pass
 
 
-def calibrate_zero_arm(side: str, arm, *, joint_wait_s: float, flash_wait_s: float) -> None:
+def calibrate_zero_arm(
+    side: str, arm, *, joint_wait_s: float, flash_wait_s: float
+) -> None:
     """Calibrate each motor with spacing so every CAN command can be processed."""
     print(f"[{side}] 逐关节写入零位标定，joint_wait={joint_wait_s:.2f}s")
     try:
@@ -297,7 +299,9 @@ def calibrate_side(
         print(f"[{side}] 重新连接 SDK，读取标定后的零位状态")
         time.sleep(args.reconnect_wait)
         arm = create_arm(arm_type, side, can_interface)
-        verify_zero_angles(side, list(arm.get_angles()), args.tolerance, "标定后当前位置")
+        verify_zero_angles(
+            side, list(arm.get_angles()), args.tolerance, "标定后当前位置"
+        )
 
         print(f"[{side}] 低速回零验证，velocity={args.home_velocity:.3f} rad/s")
         arm.enable()
@@ -397,7 +401,12 @@ def parse_args(argv: list[str] | None = None):
         parser.error("--tolerance must be finite and positive")
     if not math.isfinite(args.home_velocity) or not 0 < args.home_velocity <= 50:
         parser.error("--home-velocity must be finite and in (0, 50] rad/s")
-    for name in ("flash_wait", "calibrate_joint_wait", "reconnect_wait", "disable_wait"):
+    for name in (
+        "flash_wait",
+        "calibrate_joint_wait",
+        "reconnect_wait",
+        "disable_wait",
+    ):
         value = getattr(args, name)
         if not math.isfinite(value) or value < 0:
             parser.error(f"--{name.replace('_', '-')} must be finite and non-negative")

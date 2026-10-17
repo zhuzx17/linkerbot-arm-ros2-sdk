@@ -7,11 +7,11 @@ import pytest
 from linkerbot_arm import ArmFeedback, JointFeedback
 
 rclpy = pytest.importorskip("rclpy")
-from rclpy.executors import SingleThreadedExecutor
-from sensor_msgs.msg import JointState
-from std_srvs.srv import Trigger
+from rclpy.executors import SingleThreadedExecutor  # noqa: E402 - after importorskip
+from sensor_msgs.msg import JointState  # noqa: E402
+from std_srvs.srv import Trigger  # noqa: E402
 
-from linker_arm_ros2 import arm_node, sdk_adapter
+from linker_arm_ros2 import arm_node, sdk_adapter  # noqa: E402
 
 
 @pytest.mark.parametrize("arm_type", ["a7", "a7lite", "p7"])

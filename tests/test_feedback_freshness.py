@@ -104,8 +104,11 @@ def test_numeric_feedback_is_published_as_ros_float64(node, number):
     node._publish_state()
     assert node.state_pub.publish.call_count == 1, node._feedback_problem
     message = node.state_pub.publish.call_args.args[0]
-    for field, expected in ((message.position, 1.0), (message.velocity, 2.0),
-                            (message.effort, 3.0)):
+    for field, expected in (
+        (message.position, 1.0),
+        (message.velocity, 2.0),
+        (message.effort, 3.0),
+    ):
         assert list(field) == [expected] * 7
         assert all(isinstance(value, float) for value in field)
 
